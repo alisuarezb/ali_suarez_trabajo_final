@@ -1,3 +1,17 @@
+## Crear usuario administrador
+
+Para crear un usuario administrador inicial en la base de datos, ejecuta el siguiente script:
+
+```bash
+node create-admin.js
+```
+
+Esto creará un usuario con:
+- Email: `admin@example.com`
+- Contraseña: `admin123`
+- Rol: `admin`
+
+Puedes usar estas credenciales para autenticación y administración de productos desde el inicio.
 
 # API REST de Gestión de Productos
 
