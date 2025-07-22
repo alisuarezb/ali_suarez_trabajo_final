@@ -1,151 +1,124 @@
+
 # API REST de Gestión de Productos
 
-API REST completa para la gestión de productos con Firebase Firestore, implementando una arquitectura escalable por capas con autenticación y manejo de errores.
+API REST para administrar productos y usuarios, con autenticación JWT y Firestore como base de datos. Arquitectura escalable por capas y manejo centralizado de errores.
 
-## Características
+## Características principales
 
-- **Express** para gestionar rutas y middleware
-- **Firebase Firestore** como base de datos en la nube
-- **Arquitectura por capas** (rutas, controladores, servicios, modelos)
-- **Autenticación JWT** con roles de usuario
-- **Manejo centralizado de errores**
-- **Validación de datos**
-- **CORS** configurado para peticiones de origen cruzado
-- **Documentación completa de la API**
+- Express para servidor y rutas
+- Firebase Firestore como base de datos en la nube
+- Arquitectura por capas: rutas, controladores, servicios, modelos, middlewares
+- Autenticación JWT y autorización por roles (admin, editor, usuario)
+- Manejo centralizado de errores y validación de datos
+- CORS habilitado para peticiones cruzadas
+- Documentación completa en archivos markdown
 
-## Instalación y Configuración
+## Instalación y configuración
 
-### 1. Instalar dependencias
+1. Clona el repositorio:
+   ```bash
+   git clone https://github.com/alisuarezb/ali_suarez_trabajo_final.git
+   cd ali_suarez_trabajo_final
+   ```
 
-```bash
-npm install
-```
+2. Instala las dependencias:
+   ```bash
+   npm install
+   ```
 
-### 2. Configurar Firebase
+3. Configura Firebase:
+   - Crea un proyecto en [Firebase Console](https://console.firebase.google.com/)
+   - Habilita Firestore Database
+   - Crea una colección llamada `productos`
+   - Obtén las credenciales y colócalas en `.env` (ver ejemplo abajo)
 
-1. Crea un proyecto en [Firebase Console](https://console.firebase.google.com/)
-2. Habilita Firestore Database
-3. Crea una colección llamada `productos`
-4. Obtén las credenciales de configuración
+4. Configura variables de entorno:
+   - Copia `.env.example` a `.env` y completa tus credenciales:
+     ```bash
+     cp .env.example .env
+     ```
+   - Edita `.env`:
+     ```env
+     # Firebase
+     APIKEY=tu_api_key_aqui
+     AUTHDOMAIN=tu_proyecto.firebaseapp.com
+     PROJECTID=tu_proyecto_id
+     STORAGEBUCKET=tu_proyecto.appspot.com
+     MESSAGINGSENDERID=123456789
+     APPID=1:123456789:web:abcdef123456
+     MEASUREMENTID=G-ABCDEF123
 
-### 3. Configurar variables de entorno
+     # Servidor
+     PORT=5000
+     NODE_ENV=development
 
-Copia el archivo `.env.example` a `.env` y completa con tus credenciales:
+     # JWT
+     JWT_SECRET=tu_clave_secreta_muy_segura
+     JWT_EXPIRES_IN=24h
+     ```
 
-```bash
-cp .env.example .env
-```
+## Comandos útiles
 
-Edita el archivo `.env` con tus datos de Firebase:
-
-```env
-# Configuración de Firebase
-APIKEY=tu_api_key_aqui
-AUTHDOMAIN=tu_proyecto.firebaseapp.com
-PROJECTID=tu_proyecto_id
-STORAGEBUCKET=tu_proyecto.appspot.com
-MESSAGINGSENDERID=123456789
-APPID=1:123456789:web:abcdef123456
-MEASUREMENTID=G-ABCDEF123
-
-# Configuración del servidor
-PORT=5000
-NODE_ENV=development
-
-# Configuración JWT
-JWT_SECRET=tu_clave_secreta_muy_segura_cambiala_en_produccion
-JWT_EXPIRES_IN=24h
-```
-
-## Comandos disponibles
-
-### Iniciar el servidor en producción
-
-```bash
-npm start
-```
-
-### Iniciar el servidor en desarrollo (con Nodemon)
-
-```bash
-npm run dev
-```
-
-### Probar la API
-
-```bash
-node test-api.js
-```
-
-### Actualizar dependencias (Opcional)
-
-Para poder todas estas dependencias a su última versión, deberás instalar un paquete llamado `npm-check-updates` de forma global:
-
-```bash
-npm install -g npm-check-updates
-```
-
-Una vez instalado deberás correr el siguiente comando:
-
-```bash
-ncu -u
-```
-
-Esto modificará tu archivo package.json para que todas las dependencias estén listadas en sus últimas versiones.
-
-Una vez completado este proceso, basta con ejecutar el siguiente comando para actualizar todas tus dependencias:
-
-```bash
-npm install
-```
+- Iniciar servidor en producción:
+  ```bash
+  npm start
+  ```
+- Iniciar servidor en desarrollo (con Nodemon):
+  ```bash
+  npm run dev
+  ```
+- Probar la API:
+  ```bash
+  node test-api.js
+  ```
 
 ## Estructura del proyecto
 
 ```plaintext
 src/
-├── config/                    # Configuraciones
-│   └── db.js                 # Configuración de Firebase Firestore
-│
-├── controllers/              # Controladores (lógica de respuesta)
-│   ├── product.controller.js # Controlador de productos
-│   └── user.controller.js    # Controlador de usuarios
-│
-├── services/                 # Servicios (lógica de negocio)
-│   ├── product.service.js    # Servicio de productos
-│   └── user.service.js       # Servicio de usuarios
-│
-├── models/                   # Modelos (acceso a datos)
-│   ├── product.model.js      # Modelo de productos
-│   └── user.model.js         # Modelo de usuarios
-│
-├── routes/                   # Definición de rutas
-│   ├── product.route.js      # Rutas de productos
-│   ├── auth.routes.js        # Rutas de autenticación
-│   └── user.routes.js        # Rutas de usuarios
-│
-├── middlewares/              # Middlewares personalizados
-│   ├── auth.middleware.js    # Autenticación JWT
-│   └── error.middleware.js   # Manejo de errores
-│
-├── utils/                    # Utilidades
-│   └── index.js             # Funciones auxiliares
-│
-└── index.js                 # Punto de entrada del servidor
+├── config/           # Configuración de Firebase
+├── controllers/      # Lógica de respuesta (productos, usuarios)
+├── services/         # Lógica de negocio
+├── models/           # Acceso a datos (Firestore)
+├── routes/           # Definición de rutas
+├── middlewares/      # Autenticación JWT y manejo de errores
+├── utils/            # Funciones auxiliares
+└── index.js          # Punto de entrada del servidor
 ```
 
-## API Endpoints
+## Endpoints principales
 
-Todas las rutas son públicas y no requieren autenticación:
+### Autenticación
+- `POST /auth/login` - Login de usuario, devuelve token JWT
+- `POST /auth/register` - Registro de usuario
 
-- `GET /api/products` - Obtener todos los productos
-- `GET /api/products/:id` - Obtener producto por ID
-- `POST /api/products/create` - Crear producto
-- `PUT /api/products/:id` - Actualizar producto
-- `DELETE /api/products/:id` - Eliminar producto
+### Productos
+- `GET /api/products` - Obtener todos los productos (pública)
+- `GET /api/products/:id` - Obtener producto por ID (pública)
+- `POST /api/products/create` - Crear producto (**requiere autenticación y rol admin/editor**)
+- `PUT /api/products/:id` - Actualizar producto (**requiere autenticación y rol admin/editor**)
+- `DELETE /api/products/:id` - Eliminar producto (**requiere autenticación y rol admin**)
 
-## Estructura de Datos
+### Usuarios
+- `GET /api/users` - Obtener todos los usuarios (**requiere autenticación**)
+- `GET /api/users/:id` - Obtener usuario por ID (**requiere autenticación**)
 
-Los productos tienen la siguiente estructura:
+## Ejemplo de uso: crear producto
+
+```bash
+curl -X POST http://localhost:5000/api/products/create \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer <tu_token>" \
+  -d '{
+    "nombre": "Smartphone Samsung",
+    "precio": 599.99,
+    "descripcion": "Smartphone con pantalla AMOLED",
+    "categoria": "Electrónicos",
+    "disponible": true
+  }'
+```
+
+## Estructura de datos de producto
 
 ```json
 {
@@ -159,20 +132,22 @@ Los productos tienen la siguiente estructura:
 }
 ```
 
-## Manejo de Errores
+## Manejo de errores
 
-La API maneja los siguientes códigos de estado:
+La API responde con los siguientes códigos de estado:
 - **200**: Operación exitosa
 - **201**: Recurso creado
 - **400**: Solicitud incorrecta
+- **401**: No autenticado
+- **403**: No autorizado
 - **404**: No encontrado
 - **500**: Error del servidor
 
-## Documentación Completa
+## Documentación adicional
 
-Consulta [API_DOCUMENTATION.md](./API_DOCUMENTATION.md) para la documentación completa de la API.
----
+- [API_DOCUMENTATION.md](./API_DOCUMENTATION.md): Documentación completa de la API
+- [AUTH_DOCUMENTATION.md](./AUTH_DOCUMENTATION.md): Documentación de autenticación y roles
 
 ## Licencia
 
-Este proyecto está licenciado bajo la licencia **MIT**. Consulta el archivo [LICENSE](./LICENSE) para más detalles.
+Este proyecto está licenciado bajo la licencia MIT. Consulta el archivo [LICENSE](./LICENSE) para más detalles.

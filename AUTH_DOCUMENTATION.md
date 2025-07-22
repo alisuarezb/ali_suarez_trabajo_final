@@ -1,25 +1,23 @@
+
 # Documentación de Autenticación
 
 ## Descripción
-Sistema de autenticación JWT para la API de gestión de productos. Incluye registro de usuarios, login y protección de rutas.
+Sistema de autenticación JWT para la API de gestión de productos y usuarios. Incluye registro, login y protección de rutas por roles.
 
 ## Configuración
 
-### Variables de Entorno Adicionales
 Agrega estas variables a tu archivo `.env`:
-
 ```env
-# JWT Configuration
-JWT_SECRET=mi_clave_secreta_super_segura_2025
+JWT_SECRET=clave_secreta_segura
 JWT_EXPIRES_IN=24h
 ```
 
-## Endpoints de Autenticación
+## Endpoints principales
 
-### POST /auth/login
-Autentica un usuario y devuelve un token JWT.
+### Login de usuario
+`POST /auth/login`
 
-**Body requerido:**
+**Body:**
 ```json
 {
   "email": "usuario@example.com",
@@ -27,7 +25,7 @@ Autentica un usuario y devuelve un token JWT.
 }
 ```
 
-**Respuesta exitosa (200):**
+**Respuesta exitosa:**
 ```json
 {
   "success": true,
@@ -38,8 +36,7 @@ Autentica un usuario y devuelve un token JWT.
       "nombre": "Usuario Ejemplo",
       "email": "usuario@example.com",
       "rol": "usuario",
-      "activo": true,
-      "fechaCreacion": "2025-01-22T10:00:00.000Z"
+      "activo": true
     },
     "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
     "expiresIn": "24h"
@@ -47,17 +44,53 @@ Autentica un usuario y devuelve un token JWT.
 }
 ```
 
-## Endpoints de Usuario
+### Registro de usuario
+`POST /auth/register`
 
-### POST /api/users/register
-Registra un nuevo usuario.
-
-**Body requerido:**
+**Body:**
 ```json
 {
   "nombre": "Nuevo Usuario",
   "email": "nuevo@example.com",
   "contraseña": "password123"
+}
+```
+
+### Protección de rutas
+
+- Las rutas para crear, actualizar y eliminar productos requieren el header:
+  ```
+  Authorization: Bearer <token>
+  ```
+- Los roles válidos son: `admin`, `editor`, `usuario`. Solo `admin` puede eliminar productos.
+
+## Ejemplo de uso
+
+```bash
+curl -X POST http://localhost:5000/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{
+    "email": "admin@example.com",
+    "contraseña": "admin123"
+  }'
+```
+
+## Códigos de estado y errores
+
+- **200**: Operación exitosa
+- **201**: Recurso creado
+- **400**: Solicitud incorrecta
+- **401**: No autenticado
+- **403**: No autorizado
+- **404**: No encontrado
+- **500**: Error interno del servidor
+
+**Ejemplo de error:**
+```json
+{
+  "success": false,
+  "message": "Token inválido o expirado",
+  "statusCode": 401
 }
 ```
 

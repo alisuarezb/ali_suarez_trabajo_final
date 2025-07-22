@@ -1,40 +1,34 @@
+
 # API de Gestión de Productos
 
-## Descripción
-API REST para la gestión de productos con Firebase Firestore como base de datos. Las rutas GET son públicas, pero las rutas para crear, actualizar y eliminar productos requieren autenticación mediante JWT y roles de usuario.
+API REST para administrar productos y usuarios, con autenticación JWT y Firestore como base de datos. Las rutas GET son públicas, pero crear, actualizar y eliminar productos requieren autenticación y roles.
 
-## Configuración
 
-### Variables de Entorno
-Crea un archivo `.env` basado en `.env.example` con tus credenciales de Firebase:
+## Configuración rápida
 
-```env
-# Configuración de Firebase
-APIKEY=tu_api_key_aqui
-AUTHDOMAIN=tu_proyecto.firebaseapp.com
-PROJECTID=tu_proyecto_id
-STORAGEBUCKET=tu_proyecto.appspot.com
-MESSAGINGSENDERID=123456789
-APPID=1:123456789:web:abcdef123456
-MEASUREMENTID=G-ABCDEF123
+1. Instala dependencias:
+   ```bash
+   npm install
+   ```
+2. Configura Firebase y variables de entorno en `.env` (ver ejemplo en README.md)
+3. Inicia el servidor:
+   ```bash
+   npm start
+   ```
 
-# Configuración del servidor
-PORT=5000
-NODE_ENV=development
-```
 
-### Instalación
-```bash
-npm install
-npm start
-```
+## Endpoints principales
 
-## Endpoints de la API
+### Autenticación
+- `POST /auth/login` - Login de usuario, devuelve token JWT
+- `POST /auth/register` - Registro de usuario
 
-### Rutas de Autenticación (públicas)
-
-#### POST /auth/login
-Autentica un usuario y devuelve un token JWT.
+### Productos
+- `GET /api/products` - Obtener todos los productos (pública)
+- `GET /api/products/:id` - Obtener producto por ID (pública)
+- `POST /api/products/create` - Crear producto (**requiere autenticación y rol admin/editor**)
+- `PUT /api/products/:id` - Actualizar producto (**requiere autenticación y rol admin/editor**)
+- `DELETE /api/products/:id` - Eliminar producto (**requiere autenticación y rol admin**)
 
 **Body requerido:**
 ```json
@@ -128,137 +122,8 @@ Obtiene un producto específico por ID.
 }
 ```
 
-### POST /api/products/create
-Crea un nuevo producto.
 
-**Headers requeridos:**
-- `Content-Type: application/json`
-
-- `Authorization: Bearer <token>` (requerido, solo usuarios autenticados con rol admin/editor)
-
-**Body requerido:**
-```json
-{
-  "nombre": "Nuevo Producto",
-  "precio": 149.99,
-  "descripcion": "Descripción opcional",
-  "categoria": "Categoría opcional",
-  "disponible": true
-}
-```
-
-**Respuesta exitosa (201):**
-```json
-{
-  "success": true,
-  "message": "Producto creado exitosamente",
-  "data": {
-    "id": "nuevo_producto_id",
-    "nombre": "Nuevo Producto",
-    "precio": 149.99,
-    "descripcion": "Descripción opcional",
-    "categoria": "Categoría opcional",
-    "disponible": true,
-    "fechaCreacion": "2025-01-01T00:00:00.000Z",
-    "fechaActualizacion": "2025-01-01T00:00:00.000Z"
-  }
-}
-```
-
-### PUT /api/products/:id
-Actualiza un producto existente.
-
-**Headers requeridos:**
-- `Content-Type: application/json`
-
-- `Authorization: Bearer <token>` (requerido, solo usuarios autenticados con rol admin/editor)
-
-**Parámetros:**
-- `id` (string): ID del producto a actualizar
-
-**Body (campos opcionales):**
-```json
-{
-  "nombre": "Producto Actualizado",
-  "precio": 199.99,
-  "descripcion": "Nueva descripción",
-  "categoria": "Nueva categoría",
-  "disponible": false
-}
-```
-
-**Respuesta exitosa (200):**
-```json
-{
-  "success": true,
-  "message": "Producto actualizado exitosamente",
-  "data": {
-    "id": "producto_id",
-    "nombre": "Producto Actualizado",
-    "precio": 199.99,
-    "descripcion": "Nueva descripción",
-    "categoria": "Nueva categoría",
-    "disponible": false,
-    "fechaCreacion": "2025-01-01T00:00:00.000Z",
-    "fechaActualizacion": "2025-01-22T10:30:00.000Z"
-  }
-}
-```
-
-### DELETE /api/products/:id
-Elimina un producto.
-
-**Parámetros:**
-- `id` (string): ID del producto a eliminar
-
-**Headers requeridos:**
-- `Authorization: Bearer <token>` (requerido, solo usuarios autenticados con rol admin)
-
-**Respuesta exitosa (200):**
-```json
-{
-  "success": true,
-  "message": "Producto eliminado exitosamente"
-}
-```
-
-## Códigos de Estado HTTP
-
-- **200**: Operación exitosa
-- **201**: Recurso creado exitosamente
-- **400**: Solicitud incorrecta (datos inválidos)
-- **404**: Recurso no encontrado
-- **500**: Error interno del servidor
-
-## Estructura de Errores
-
-```json
-{
-  "success": false,
-  "message": "Descripción del error",
-  "statusCode": 400
-}
-```
-
-## Estructura del Producto en Firebase
-
-Los productos se almacenan en la colección `productos` con la siguiente estructura:
-
-```json
-{
-  "nombre": "string (requerido)",
-  "precio": "number (requerido, > 0)",
-  "descripcion": "string (opcional)",
-  "categoria": "string (opcional, default: 'General')",
-  "disponible": "boolean (opcional, default: true)",
-  "fechaCreacion": "string (ISO date)",
-  "fechaActualizacion": "string (ISO date)"
-}
-```
-
-## Ejemplos de Uso
-
-### Crear un producto
+### Ejemplo: crear producto
 ```bash
 curl -X POST http://localhost:5000/api/products/create \
   -H "Content-Type: application/json" \
@@ -272,17 +137,8 @@ curl -X POST http://localhost:5000/api/products/create \
   }'
 ```
 
-### Obtener todos los productos
-```bash
-curl http://localhost:5000/api/products
-```
 
-### Obtener un producto por ID
-```bash
-curl http://localhost:5000/api/products/PRODUCT_ID
-```
-
-### Actualizar un producto
+### Ejemplo: actualizar producto
 ```bash
 curl -X PUT http://localhost:5000/api/products/PRODUCT_ID \
   -H "Content-Type: application/json" \
@@ -293,8 +149,43 @@ curl -X PUT http://localhost:5000/api/products/PRODUCT_ID \
   }'
 ```
 
-### Eliminar un producto
+
+### Ejemplo: eliminar producto
 ```bash
 curl -X DELETE http://localhost:5000/api/products/PRODUCT_ID \
   -H "Authorization: Bearer <tu_token>"
+```
+
+
+## Estructura de datos de producto
+```json
+{
+  "nombre": "string (requerido)",
+  "precio": "number (requerido, > 0)",
+  "descripcion": "string (opcional)",
+  "categoria": "string (opcional, default: 'General')",
+  "disponible": "boolean (opcional, default: true)",
+  "fechaCreacion": "string (ISO date)",
+  "fechaActualizacion": "string (ISO date)"
+}
+```
+
+
+## Códigos de estado y errores
+
+- **200**: Operación exitosa
+- **201**: Recurso creado
+- **400**: Solicitud incorrecta
+- **401**: No autenticado
+- **403**: No autorizado
+- **404**: No encontrado
+- **500**: Error interno del servidor
+
+**Ejemplo de error:**
+```json
+{
+  "success": false,
+  "message": "Descripción del error",
+  "statusCode": 400
+}
 ```
